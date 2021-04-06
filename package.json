@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/EpitechIT2020/B-WEB-200-TIR-2-1-epytodo-vesa.kelmendi#readme",
   "dependencies": {
+    "dotenv": "^8.2.0",
     "express": "^4.17.1"
   }
 }
