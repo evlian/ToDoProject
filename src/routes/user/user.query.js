@@ -1,4 +1,4 @@
-function register_user(connection, email, password, name, firstname) {
+function insert_user(connection, email, password, name, firstname) {
     connection.query(
         `INSERT INTO user(email, password, name, firstname)
         VALUES("${email}", "${password}", "${name}", "${firstname}");`
@@ -16,7 +16,16 @@ function get_user(connection, id) {
 
 function get_users(connection) {
     connection.query(
-        `SELECT * FROM user;`,
+        'SELECT * FROM user;',
+        function (err, results) {
+            console.log(results);
+        }
+    );
+}
+
+function get_user_tasks(connection, user_id) {
+    connection.query(
+        `SELECT * FROM todos WHERE user_id = ${user_id};`,
         function (err, results, fields) {
             return results;
         }
@@ -36,4 +45,4 @@ function update_user(connection, id, email, password, name, firstname, created_a
     )
 }
 
-module.exports = { register_user, get_user, get_users, delete_user, update_user };
+module.exports = { insert_user, get_user, get_users, delete_user, update_user, get_user_tasks };

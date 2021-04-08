@@ -5,9 +5,9 @@ function register_task(connection, user_id, title, description, status, due_time
     )
 }
 
-function get_tasks(connection, user_id, task_id) {
+function get_task(connection, user_id, task_id) {
     connection.query(
-        `SELECT * FROM todos WHERE user_id = ${user_id};`,
+        `SELECT * FROM todos WHERE task_id = ${task_id};`,
         function (err, results, fields) {
             return results;
         }

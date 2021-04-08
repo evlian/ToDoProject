@@ -4,18 +4,18 @@ USE epytodo;
 
 CREATE TABLE user (
     id INT NOT NULL AUTO_INCREMENT,
-    email VARCHAR(40) NOT NULL UNIQUE,
-    password VARCHAR(50) NOT NULL,
-    name VARCHAR(50) NOT NULL,
-    firstname VARCHAR(50) NOT NULL,
+    email VARCHAR(400) NOT NULL UNIQUE,
+    password VARCHAR(500) NOT NULL,
+    name VARCHAR(500) NOT NULL,
+    firstname VARCHAR(500) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     KEY(id)
 );
 
 CREATE TABLE todo (
     id INT NOT NULL AUTO_INCREMENT,
-    title VARCHAR(80),
-    description VARCHAR(260) NOT NULL,
+    title VARCHAR(800),
+    description VARCHAR(860) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     due_time TIMESTAMP NOT NULL,
     status VARCHAR(50) DEFAULT "not started",
