@@ -1,29 +1,61 @@
-function insert_user(connection, email, password, name, firstname) {
+function insertUser(connection, email, password, name, firstname) {
     connection.query(
         `INSERT INTO user(email, password, name, firstname)
-        VALUES("${email}", "${password}", "${name}", "${firstname}");`
+        VALUES("${email}", "${password}", "${name}", "${firstname}");`,
+        function(err, results) {
+            if (err) return "duplicate-email";
+        }
     )
+    return undefined;
 }
 
-function get_user(connection, id) {
-    connection.query(
-        `SELECT * FROM user WHERE id = ${id};`,
+async function getUserById(connection, id) {
+    let user;
+    let promise = new Promise((resolve, reject) => {
+        connection.query(`SELECT * FROM user WHERE id = ${id} OR email = ${id};`,
         function (err, results, fields) {
-            return results;
-        }
-    )
+            if (err) reject();
+            if (results != "")
+                user = results;
+            resolve(user);
+        });
+    })
+    return await promise;
 }
 
-function get_users(connection) {
-    connection.query(
-        'SELECT * FROM user;',
-        function (err, results) {
-            console.log(results);
-        }
-    );
+async function getUserPasswordByEmail(connection, email) {
+    let password;
+    let promise = new Promise((resolve, reject) => {
+        connection.query(`SELECT password FROM user WHERE email = "${email}";`, (err, results) => {
+            if (err) reject();
+            if (results != ""){
+                password = results[0].password;
+            }
+            resolve(password);
+        });
+    })
+    return await promise;
 }
 
-function get_user_tasks(connection, user_id) {
+
+async function getUsers(connection) {
+    let result;
+    let promise = new Promise((resolve, reject) => {
+        connection.query(
+            'SELECT * FROM user;',
+            function (err, results) {
+                if (err) reject();
+                if (results != "") {
+                    result = results;
+                }
+                resolve(result);
+            }
+        );
+    })
+    return await promise;
+}
+
+async function getUserTasks(connection, user_id) {
     connection.query(
         `SELECT * FROM todos WHERE user_id = ${user_id};`,
         function (err, results, fields) {
@@ -32,17 +64,17 @@ function get_user_tasks(connection, user_id) {
     )
 }
 
-function delete_user(connection, user_id) {
+async function deleteUser(connection, user_id) {
     connection.query(
         `DELETE FROM user WHERE id = ${user_id};`
     )
 }
 
-function update_user(connection, id, email, password, name, firstname, created_at) {
+function updateUser(connection, id, email, password, name, firstname, createdAt) {
     connection.query(
         `UPDATE user SET email = ${email}, SET password = ${password}, SET name = ${name},
-        SET firstname ${firstname}, SET created_at = ${created_at} WHERE id = ${id};`
+        SET firstname ${firstname}, SET created_at = ${createdAt} WHERE id = ${id};`
     )
 }
 
-module.exports = { insert_user, get_user, get_users, delete_user, update_user, get_user_tasks };
+module.exports = { insertUser, getUserById, getUserPasswordByEmail, getUsers, deleteUser, updateUser, getUserTasks };

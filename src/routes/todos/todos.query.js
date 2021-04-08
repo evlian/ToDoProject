@@ -1,11 +1,11 @@
-function register_task(connection, user_id, title, description, status, due_time) {
+function registerTask(connection, userId, title, description, status, dueTime) {
     connection.query(
         `INSERT INTO todos(user_id, title, description, status, due_time)
-        VALUES("${user_id}", "${title}", "${description}", "${status}", "${due_time}");`
+        VALUES("${userId}", "${title}", "${description}", "${status}", "${dueTime}");`
     )
 }
 
-function get_task(connection, user_id, task_id) {
+function getTask(connection, task_id) {
     connection.query(
         `SELECT * FROM todos WHERE task_id = ${task_id};`,
         function (err, results, fields) {
@@ -14,17 +14,17 @@ function get_task(connection, user_id, task_id) {
     )
 }
 
-function update_task(connection, task_id, title, description, status) {
+function updateTask(connection, taskId, title, description, status) {
     connection.query(
         `UPDATE todos SET title = ${title}, SET description = ${description},
-        SET status = ${status} WHERE task_id = ${task_id};`
+        SET status = ${status} WHERE task_id = ${taskId};`
     )
 }
 
-function delete_task(connection, task_id) {
+function deleteTask(connection, taskId) {
     connection.query(
-        `DELETE FROM todos WHERE task_id = ${task_id};`
+        `DELETE FROM todos WHERE task_id = ${taskId};`
     )
 }
 
-module.exports = { register_task, get_tasks, update_task, delete_task };
+module.exports = { registerTask, getTasks, updateTask, deleteTask };
