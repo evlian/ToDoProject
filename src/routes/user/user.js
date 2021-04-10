@@ -29,9 +29,35 @@ async function userRoutes (connection, app) {
         res.status(201);
     });
 
-    app.get (/user\/:.*/, auth.authenticateToken, async (req, res) => {
-        id = req.url.split(':')[1];;
-        results = await queries.getUserById(connection, id);
+    app.get (/user\/:.+/, auth.authenticateToken, async (req, res) => {
+        id = req.url.split(':')[1];
+        if (id.includes('@'))
+            results = await queries.getUserByEmail(connection, id);
+        else
+            results = await queries.getUserById(connection, id);
+        res.send(results);
+        res.status(201);
+    });
+
+    app.put (/user\/:.+/, auth.authenticateToken, async (req, res) => {
+        id = req.url.split(':')[1];
+        queries.updateUser(connection, id, req.body.email
+                            ,req.body.password, req.body.name
+                            , req.body.firstname ,req.body.created_at);
+        res.json(req.body);
+        res.status(201).send();
+    });
+
+    app.delete (/user\/:.+/, auth.authenticateToken, async (req, res) => {
+        id = req.url.split(':')[1];
+        queries.deleteUser(connection, id);
+        return res.status(201).json({
+            msg: `successfully deleted record number: ${id}`,
+        });
+    });
+
+    app.get ("/user/todos", auth.authenticateToken, async (req, res) => {
+        result = await(getUserTasks);
         res.send(results);
         res.status(201);
     });

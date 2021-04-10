@@ -12,16 +12,33 @@ function insertUser(connection, email, password, name, firstname) {
 async function getUserById(connection, id) {
     let user;
     let promise = new Promise((resolve, reject) => {
-        connection.query(`SELECT * FROM user WHERE id = ${id} OR email = ${id};`,
-        function (err, results, fields) {
-            if (err) reject();
-            if (results != "")
-                user = results;
-            resolve(user);
+        connection.query(`SELECT * FROM user WHERE id = ${id} OR email = "${id}";`,
+            function (err, results) {
+                if (err) reject();
+                if (results != "" && results != undefined)
+                    user = results;
+                resolve(user);
         });
     })
     return await promise;
 }
+
+async function getUserByEmail(connection, email) {
+    let user;
+    let promise = new Promise((resolve, reject) => {
+        connection.query(
+            `SELECT * FROM user WHERE email = "${email}";`,
+            function (err, results) {
+                if (err) reject;
+                if (results != "" && results != undefined)
+                    user = results;
+                resolve(user);
+            }
+        )
+    })
+    return await promise;
+}
+
 
 async function getUserPasswordByEmail(connection, email) {
     let password;
@@ -32,6 +49,20 @@ async function getUserPasswordByEmail(connection, email) {
                 password = results[0].password;
             }
             resolve(password);
+        });
+    })
+    return await promise;
+}
+
+async function getUserIdByEmail(connection, email) {
+    let id;
+    let promise = new Promise((resolve, reject) => {
+        connection.query(`SELECT id FROM user WHERE email = "${email}";`, (err, results) => {
+            if (err) reject();
+            if (results != ""){
+                id = results[0].id;
+            }
+            resolve(id);
         });
     })
     return await promise;
@@ -55,13 +86,22 @@ async function getUsers(connection) {
     return await promise;
 }
 
-async function getUserTasks(connection, user_id) {
-    connection.query(
-        `SELECT * FROM todos WHERE user_id = ${user_id};`,
-        function (err, results, fields) {
-            return results;
-        }
-    )
+async function getQueryWithPromise(connection, queryStatement)
+{
+    let result;
+    let promise = new Promise((resolve, reject) => {
+        connection.query(
+            queryStatement,
+            function (err, results) {
+                if (err, reject);
+                if (results != "") {
+                    result = results;
+                }
+                resolve(result);
+            }
+        )
+    });
+    return await promise;
 }
 
 async function deleteUser(connection, user_id) {
@@ -72,9 +112,9 @@ async function deleteUser(connection, user_id) {
 
 function updateUser(connection, id, email, password, name, firstname, createdAt) {
     connection.query(
-        `UPDATE user SET email = ${email}, SET password = ${password}, SET name = ${name},
-        SET firstname ${firstname}, SET created_at = ${createdAt} WHERE id = ${id};`
+        `UPDATE user SET email = "${email}", password = "${password}", name = "${name}",
+        firstname = "${firstname}", created_at = "${createdAt}" WHERE id = ${id};`
     )
 }
 
-module.exports = { insertUser, getUserById, getUserPasswordByEmail, getUsers, deleteUser, updateUser, getUserTasks };
+module.exports = { insertUser, getUserById, getUserPasswordByEmail, getUsers, deleteUser, updateUser, getUserIdByEmail, getQueryWithPromise, getUserIdByEmail };
