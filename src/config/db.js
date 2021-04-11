@@ -13,4 +13,8 @@ function getDbConnection() {
     return connection;
 }
 
-module.exports = { getDbConnection };
+function closeDbConnection(connection) {
+    connection.end();
+}
+
+module.exports = { getDbConnection, closeDbConnection };

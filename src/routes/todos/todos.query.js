@@ -8,7 +8,8 @@ function registerTask(connection, userId, title, description, status, dueTime) {
 }
 
 async function getTaskById(connection, id) {
-    return await userQuery.getQueryWithPromise(connection, `SELECT * FROM todo WHERE id = ${id};`);
+    task = await userQuery.getQueryWithPromise(connection, `SELECT * FROM todo WHERE id = ${id};`);
+    return task[0];
 }
 
 function updateTask(connection, taskId, title, description, status, dueTime) {
@@ -25,10 +26,21 @@ function deleteTask(connection, taskId) {
 }
 
 async function getUserTasks(connection, email) {
-    let user_id = await userQuery.getUserIdByEmail(connection, email);
+    let user_id = await userQuery.getUserById(connection, email);
 
     return await userQuery.getQueryWithPromise(connection,
-            `SELECT * FROM todo WHERE user_id = ${user_id};`);
+            `SELECT * FROM todo WHERE user_id = ${user_id.id};`);
 }
 
-module.exports = { registerTask, updateTask, deleteTask, getTaskById, getUserTasks };
+async function getAllTasks(connection) {
+    return await userQuery.getQueryWithPromise(connection,
+        `SELECT * FROM todo;`)
+}
+
+async function taskExists(connection, id) {
+    const task = await getTaskById(connection, id);
+    if (task) return true;
+    return false;
+}
+
+module.exports = { registerTask, updateTask, deleteTask, getTaskById, getUserTasks, getAllTasks, taskExists };

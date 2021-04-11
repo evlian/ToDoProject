@@ -7,15 +7,15 @@ async function authorizeUser(app, connection)
 {
     app.post("/login", async (req, res) => {
         const email = req.body.email;
-        const password = await userQuery.getUserPasswordByEmail(connection, email);
-        if (password == undefined) {
+        const user = await userQuery.getUserById(connection, email);
+        if (! await userQuery.emailExists(connection, email)) {
             res.status(200);
             res.json({"msg": "Invalid Credentials"});
         }
         try {
-            if (await bcrypt.compare(req.body.password, password)) {
-                const user = {"user": email};
-                const token = jwt.sign(user, process.env.SECRET);
+            if (await bcrypt.compare(req.body.password, user.password)) {
+                const userJson = {"user": email};
+                const token = jwt.sign(userJson, process.env.SECRET);
                 res.status(200);
                 res.json({"token": `${token}`});
             } else {
@@ -23,7 +23,9 @@ async function authorizeUser(app, connection)
                 res.json({"msg": "Invalid Credentials"});
             }
         } catch {
-            res.status(500).send();
+            return res.status(500).json({
+                msg: 'Internal server error',
+            });
         }
     });
 }

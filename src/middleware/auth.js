@@ -5,7 +5,11 @@ function authenticateToken(req, res, next) {
     const authHeader = req.headers['token'];
     const token = authHeader;
 
-    if (token == null) return res.sendStatus(401);
+    if (token == null) {
+        return res.status(403).json({
+            msg: 'No token, authorization denied',
+        });
+    }
     jwt.verify(token, process.env.SECRET, (err, user) => {
         if (err) {
             return res.status(403).json({
